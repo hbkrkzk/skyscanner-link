@@ -49,6 +49,45 @@
             padding-left: 20px;
         }
 
+        .custom-input-container {
+            display: none;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .custom-input-container.visible {
+            display: block;
+        }
+
+        .custom-input {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
+            margin-right: 8px;
+        }
+
+        .custom-input-button {
+            padding: 8px 16px;
+            font-size: 16px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .custom-input-button:hover {
+            background-color: #0052a3;
+        }
+
+        .custom-input-note {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 4px;
+        }
+
         .month-container {
             max-width: 100%;
             margin: 0 auto;
@@ -80,21 +119,39 @@
             display: block;
             color: #0066cc;
             text-decoration: none;
-            padding: 5px 0;
+            padding: 12px 8px;
             font-size: 0.9em;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+            margin: 4px 0;
         }
 
         .search-link:hover {
-            text-decoration: underline;
+            text-decoration: none;
+            background-color: #f0f7ff;
+        }
+
+        .search-link:active {
+            background-color: #e5f0ff;
         }
 
         .emoji {
-            margin-right: 5px;
+            margin-right: 8px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .location {
+            display: inline-block;
+            vertical-align: middle;
         }
 
         .trip-type {
             color: #666;
-            font-size: 0.8em;
+            font-size: 0.85em;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 4px;
         }
 
         @media (max-width: 480px) {
@@ -120,6 +177,16 @@
             select option {
                 padding: 16px;
                 font-size: 16px;
+            }
+
+            .search-link {
+                padding: 16px 12px;
+                font-size: 1em;
+            }
+
+            .custom-input {
+                width: calc(100% - 100px);
+                max-width: 200px;
             }
         }
     </style>
@@ -149,68 +216,79 @@
             <option value="vn">🇻🇳 ベトナム発</option>
             <option value="id">🇮🇩 インドネシア発</option>
             <option value="ph">🇵🇭 フィリピン発</option>
+            <option value="custom">🌏 その他の国・空港</option>
         </select>
     </div>
 
-    <div id="content-container">
-        <div class="month-container">
-            <div class="month-grid"></div>
-        </div>
+    <div class="custom-input-container" id="custom-input-container">
+        <input type="text" class="custom-input" id="custom-code" placeholder="国コードまたは空港コード">
+        <button class="custom-input-button" onclick="applyCustomCode()">確定</button>
+        <div class="custom-input-note">例: fr（フランス）, cdg（パリ・シャルル・ド・ゴール空港）</div>
     </div>
+
+    <div id="content-container">
+            <div class="month-container">
+            <div class="month-grid"></div>
+                    </div>
+                    </div>
 
     <script>
         function getCurrentMonth() {
             const now = new Date();
-            const year = 2025;
-            const month = 3;
-            return `${year}${month.toString().padStart(2, '0')}`;
+            const year = now.getFullYear().toString().substring(2);
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            console.log('Current date:', now, 'Year:', year, 'Month:', month);
+            return year + month;
         }
 
         function getNextMonth(currentMonth) {
-            const year = parseInt(currentMonth.substring(0, 4));
-            const month = parseInt(currentMonth.substring(4));
+            const year = parseInt(currentMonth.substring(0, 2));
+            const month = parseInt(currentMonth.substring(2));
             if (month === 12) {
-                return `${year + 1}01`;
+                return `${(year + 1).toString().padStart(2, '0')}01`;
             }
-            return `${year}${(month + 1).toString().padStart(2, '0')}`;
+            return `${year.toString().padStart(2, '0')}${(month + 1).toString().padStart(2, '0')}`;
         }
 
         function generateMonthList(startMonth) {
+            console.log('Start month:', startMonth);
             const months = [];
             let currentMonth = startMonth;
             for (let i = 0; i < 12; i++) {
                 months.push(currentMonth);
                 currentMonth = getNextMonth(currentMonth);
             }
+            console.log('Generated months:', months);
             return months;
         }
 
         function formatMonthDisplay(month) {
-            const year = month.substring(0, 4);
-            const monthNum = parseInt(month.substring(4));
+            const year = "20" + month.substring(0, 2);
+            const monthNum = parseInt(month.substring(2));
             return `${year}年${monthNum}月`;
         }
 
         function generateMonthItemHtml(month, from, location) {
+            const displayLocation = location.replace(/^\s+/, '');
             return `
-                <div class="month-item">
+                    <div class="month-item">
                     <div class="month-title">${formatMonthDisplay(month)}</div>
                     <a href="#" class="search-link" data-from="${from}" data-type="oneway" data-month="${month}" target="_blank">
-                        <span class="emoji">✈️</span>
-                        <span class="location">${location}</span>
-                        <span class="trip-type">（片道便）</span>
-                    </a>
+                            <span class="emoji">✈️</span>
+                        <span class="location">${displayLocation}</span>
+                            <span class="trip-type">（片道便）</span>
+                        </a>
                     <a href="#" class="search-link" data-from="${from}" data-type="return-same" data-month="${month}" target="_blank">
-                        <span class="emoji">🔄</span>
-                        <span class="location">${location}</span>
-                        <span class="trip-type">（往復（同月））</span>
-                    </a>
+                            <span class="emoji">🔄</span>
+                        <span class="location">${displayLocation}</span>
+                            <span class="trip-type">（往復（同月））</span>
+                        </a>
                     <a href="#" class="search-link" data-from="${from}" data-type="return-next" data-month="${month}" target="_blank">
-                        <span class="emoji">📅</span>
-                        <span class="location">${location}</span>
-                        <span class="trip-type">（往復（翌月））</span>
-                    </a>
-                </div>
+                            <span class="emoji">📅</span>
+                        <span class="location">${displayLocation}</span>
+                            <span class="trip-type">（往復（翌月））</span>
+                        </a>
+                    </div>
             `;
         }
 
@@ -224,7 +302,8 @@
                 case 'return-same':
                     return `${baseUrl}${from}/${params}&rtn=1&oym=${month}&iym=${month}`;
                 case 'return-next':
-                    return `${baseUrl}${from}/${params}&rtn=1&oym=${month}&iym=${getNextMonth(month)}`;
+                    const nextMonth = getNextMonth(month);
+                    return `${baseUrl}${from}/${params}&rtn=1&oym=${month}&iym=${nextMonth}`;
                 default:
                     return '#';
             }
@@ -232,13 +311,19 @@
 
         function updateMonthDisplay(month) {
             const startMonth = formatMonthDisplay(month);
-            const endMonth = formatMonthDisplay(getNextMonth(generateMonthList(month)[10]));
             document.getElementById('current-month').innerHTML = 
                 `${startMonth}から 12ヶ月分`;
         }
 
         function updateContent(from) {
+            if (from === 'custom') {
+                document.getElementById('custom-input-container').classList.add('visible');
+                return;
+            }
+            document.getElementById('custom-input-container').classList.remove('visible');
+            
             const currentMonth = getCurrentMonth();
+            console.log('Current month in updateContent:', currentMonth);
             updateMonthDisplay(currentMonth);
             const months = generateMonthList(currentMonth);
             const grid = document.querySelector('.month-grid');
@@ -253,7 +338,37 @@
                 const type = link.dataset.type;
                 const month = link.dataset.month;
                 if (type && month) {
-                    link.href = generateUrl(from, month, type);
+                    const url = generateUrl(from, month, type);
+                    console.log('Generated URL:', url);
+                    link.href = url;
+                }
+            });
+        }
+
+        function applyCustomCode() {
+            const customCode = document.getElementById('custom-code').value.trim().toLowerCase();
+            if (!customCode) {
+                alert('国コードまたは空港コードを入力してください');
+                return;
+            }
+            
+            const currentMonth = getCurrentMonth();
+            const months = generateMonthList(currentMonth);
+            const grid = document.querySelector('.month-grid');
+            const displayLocation = `🌏 ${customCode}発`;
+            
+            grid.innerHTML = '';
+            months.forEach(month => {
+                grid.insertAdjacentHTML('beforeend', generateMonthItemHtml(month, customCode, displayLocation));
+            });
+            
+            grid.querySelectorAll('.search-link').forEach(link => {
+                const type = link.dataset.type;
+                const month = link.dataset.month;
+                if (type && month) {
+                    const url = generateUrl(customCode, month, type);
+                    console.log('Generated URL:', url);
+                    link.href = url;
                 }
             });
         }
@@ -263,4 +378,4 @@
         });
     </script>
 </body>
-</html> 
+</html>
