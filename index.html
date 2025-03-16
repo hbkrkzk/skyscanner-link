@@ -15,6 +15,7 @@
         .title {
             margin-bottom: 10px;
             text-align: center;
+            font-size: 1.2em;
         }
 
         #current-month {
@@ -26,12 +27,12 @@
         }
 
         .location-selector {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             text-align: center;
         }
 
         select {
-            padding: 8px;
+            padding: 6px;
             font-size: 16px;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -40,7 +41,7 @@
         }
 
         select option {
-            padding: 12px;
+            padding: 6px;
             font-size: 16px;
         }
 
@@ -52,7 +53,7 @@
         .custom-input-container {
             display: none;
             text-align: center;
-            margin: 10px 0;
+            margin: 5px 0;
         }
 
         .custom-input-container.visible {
@@ -88,42 +89,33 @@
             margin-top: 4px;
         }
 
-        .month-container {
-            max-width: 100%;
-            margin: 0 auto;
-        }
-
-        .month-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
-
         .month-item {
-            background: white;
+            padding: 8px;
+            border: 1px solid #eee;
             border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-color: white;
+            text-align: left;
         }
 
         .month-title {
             font-size: 1.1em;
             color: #333;
-            margin-bottom: 8px;
-            padding-bottom: 5px;
+            margin-bottom: 6px;
+            padding-bottom: 4px;
             border-bottom: 1px solid #eee;
+            text-align: left;
         }
 
         .search-link {
             display: block;
             color: #0066cc;
             text-decoration: none;
-            padding: 12px 8px;
+            padding: 8px 8px;
             font-size: 0.9em;
             border-radius: 4px;
             transition: background-color 0.2s;
-            margin: 4px 0;
+            margin: 2px 0;
+            text-align: left;
         }
 
         .search-link:hover {
@@ -136,7 +128,7 @@
         }
 
         .emoji {
-            margin-right: 8px;
+            margin-right: 4px;
             display: inline-block;
             vertical-align: middle;
         }
@@ -152,6 +144,25 @@
             display: inline-block;
             vertical-align: middle;
             margin-left: 4px;
+        }
+
+        #content-container {
+            text-align: left;
+        }
+
+        .month-container {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 10px;
+            text-align: left;
+        }
+
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
         }
 
         @media (max-width: 480px) {
@@ -171,16 +182,16 @@
                 width: 100%;
                 max-width: 300px;
                 font-size: 16px;
-                padding: 12px;
+                padding: 10px;
             }
 
             select option {
-                padding: 16px;
+                padding: 10px;
                 font-size: 16px;
             }
 
             .search-link {
-                padding: 16px 12px;
+                padding: 12px 8px;
                 font-size: 1em;
             }
 
@@ -276,7 +287,7 @@
                     <a href="#" class="search-link" data-from="${from}" data-type="oneway" data-month="${month}" target="_blank">
                             <span class="emoji">✈️</span>
                         <span class="location">${displayLocation}</span>
-                            <span class="trip-type">（片道便）</span>
+                            <span class="trip-type">（片道）</span>
                         </a>
                     <a href="#" class="search-link" data-from="${from}" data-type="return-same" data-month="${month}" target="_blank">
                             <span class="emoji">🔄</span>
@@ -355,7 +366,7 @@
             const currentMonth = getCurrentMonth();
             const months = generateMonthList(currentMonth);
             const grid = document.querySelector('.month-grid');
-            const displayLocation = `🌏 ${customCode}発`;
+            const displayLocation = `🌏 ${customCode.toUpperCase()}発`;
             
             grid.innerHTML = '';
             months.forEach(month => {
